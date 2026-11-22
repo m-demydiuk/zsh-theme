@@ -50,7 +50,7 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     || return 0
 
     REF=$(string_truncate 15 "…" "${REF}")
-    hook_com[misc]+="%F{red}${REF}"
+    hook_com[misc]+="%F{red}${REF//\%/%%}"
 
     local STATUS
     STATUS=$(git status --porcelain 2> /dev/null | tail -n 1)
