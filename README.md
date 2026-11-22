@@ -53,6 +53,13 @@ sed -i.bak -E 's/^([[:space:]]*ZSH_THEME=).*/\1"vstelmakh"/' "${HOME}/.zshrc" &&
 3. Restart your terminal or run `source ~/.zshrc` to apply the changes.
 </details>
 
+## Options
+Set these variables in `~/.zshrc` to change the behaviour.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VSTELMAKH_THEME_TIME_COLORS` | `0` | Colour the arrow by time of day after a successful command (`1` to enable): yellow 06–12, green 12–18, orange 18–22, magenta 22–06 |
+
 ## Uninstallation
 Select and follow the uninstallation instructions for the shell framework used during installation.
 

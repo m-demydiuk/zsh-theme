@@ -59,14 +59,40 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     fi
 }
 
+# Arrow colour that follows the time of day (1 to enable)
+: ${VSTELMAKH_THEME_TIME_COLORS:=0}
+zmodload zsh/datetime
+
+_vstelmakh_theme_time_color() {
+    local NOW=$1
+    local HOUR
+    strftime -s HOUR '%H' $NOW
+    HOUR=$(( 10#$HOUR ))
+
+    if (( HOUR >= 6 && HOUR < 12 )); then
+        REPLY="yellow" # morning
+    elif (( HOUR >= 12 && HOUR < 18 )); then
+        REPLY="green" # afternoon
+    elif (( HOUR >= 18 && HOUR < 22 )); then
+        REPLY="208" # evening (orange)
+    else
+        REPLY="magenta" # night
+    fi
+}
+
 setopt prompt_subst
 precmd_functions+=( theme_precmd )
 theme_precmd () {
+    _vstelmakh_theme_success_color="green"
+    if (( VSTELMAKH_THEME_TIME_COLORS )); then
+        _vstelmakh_theme_time_color $EPOCHSECONDS
+        _vstelmakh_theme_success_color=$REPLY
+    fi
     vcs_info
 }
 
 PROMPT="%B" # text style bold
-PROMPT+="%(?:%F{green}:%F{red})➜ " # previous command status
+PROMPT+='%(?:%F{${_vstelmakh_theme_success_color}}:%F{red})➜ ' # previous command status
 PROMPT+="%F{cyan}%~ " # workdir
 PROMPT+='${vcs_info_msg_0_}' # git reference (if git repo)
 PROMPT+="%b%f%u" # reset all text styles
