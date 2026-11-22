@@ -59,14 +59,38 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     fi
 }
 
+# Symbol after this many failed commands in a row (0 to disable)
+: ${VSTELMAKH_THEME_FAIL_STREAK:=0}
+typeset -gi _vstelmakh_theme_fail_count=0
+autoload -Uz add-zsh-hook
+
+_vstelmakh_theme_preexec() {
+    _vstelmakh_theme_command_ran=1
+}
+add-zsh-hook preexec _vstelmakh_theme_preexec
+
 setopt prompt_subst
 precmd_functions+=( theme_precmd )
 theme_precmd () {
+    local LAST_STATUS=$?
+    if [[ -n $_vstelmakh_theme_command_ran ]]; then
+        if (( LAST_STATUS == 0 )); then
+            _vstelmakh_theme_fail_count=0
+        else
+            (( _vstelmakh_theme_fail_count++ ))
+        fi
+        unset _vstelmakh_theme_command_ran
+    fi
+
+    _vstelmakh_theme_fail_symbol="➜"
+    if (( VSTELMAKH_THEME_FAIL_STREAK > 0 && _vstelmakh_theme_fail_count >= VSTELMAKH_THEME_FAIL_STREAK )); then
+        _vstelmakh_theme_fail_symbol="🤦"
+    fi
     vcs_info
 }
 
 PROMPT="%B" # text style bold
-PROMPT+="%(?:%F{green}:%F{red})➜ " # previous command status
+PROMPT+='%(?:%F{green}➜:%F{red}${_vstelmakh_theme_fail_symbol}) ' # previous command status
 PROMPT+="%F{cyan}%~ " # workdir
 PROMPT+='${vcs_info_msg_0_}' # git reference (if git repo)
 PROMPT+="%b%f%u" # reset all text styles
