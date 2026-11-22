@@ -53,6 +53,13 @@ sed -i.bak -E 's/^([[:space:]]*ZSH_THEME=).*/\1"vstelmakh"/' "${HOME}/.zshrc" &&
 3. Restart your terminal or run `source ~/.zshrc` to apply the changes.
 </details>
 
+## Options
+Set these variables in `~/.zshrc` before the theme is loaded to change the behaviour.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VSTELMAKH_THEME_EXIT_CODE` | `1` | Show the exit code of a failed command next to the arrow (`0` to disable) |
+
 ## Uninstallation
 Select and follow the uninstallation instructions for the shell framework used during installation.
 

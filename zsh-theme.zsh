@@ -65,8 +65,14 @@ theme_precmd () {
     vcs_info
 }
 
+# Exit code of a failed command next to the status arrow (0 to disable)
+: ${VSTELMAKH_THEME_EXIT_CODE:=1}
+
 PROMPT="%B" # text style bold
 PROMPT+="%(?:%F{green}:%F{red})➜ " # previous command status
+if (( VSTELMAKH_THEME_EXIT_CODE )); then
+    PROMPT+="%(?::%F{red}%? )" # exit code (if failed)
+fi
 PROMPT+="%F{cyan}%~ " # workdir
 PROMPT+='${vcs_info_msg_0_}' # git reference (if git repo)
 PROMPT+="%b%f%u" # reset all text styles
