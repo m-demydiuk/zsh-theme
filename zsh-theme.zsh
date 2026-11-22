@@ -57,6 +57,14 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     if [[ -n $STATUS ]]; then
         hook_com[misc]+=" %F{yellow}•" # repository has changes
     fi
+
+    if (( ${VSTELMAKH_THEME_STASH:-1} )); then
+        local STASHES
+        STASHES=$(git rev-list --walk-reflogs --count refs/stash 2> /dev/null)
+        if (( STASHES > 0 )); then
+            hook_com[misc]+=" %F{magenta}≡${STASHES}" # stash entries
+        fi
+    fi
 }
 
 setopt prompt_subst
