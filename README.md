@@ -53,6 +53,14 @@ sed -i.bak -E 's/^([[:space:]]*ZSH_THEME=).*/\1"vstelmakh"/' "${HOME}/.zshrc" &&
 3. Restart your terminal or run `source ~/.zshrc` to apply the changes.
 </details>
 
+## Large repositories
+The changes indicator runs `git status` before every prompt, including the scan for untracked files.
+In very large repositories this scan can make the prompt noticeably slower.
+Set `VSTELMAKH_THEME_UNTRACKED=no` in `~/.zshrc` to skip it; untracked files then no longer show the indicator:
+```shell
+export VSTELMAKH_THEME_UNTRACKED=no
+```
+
 ## Uninstallation
 Select and follow the uninstallation instructions for the shell framework used during installation.
 

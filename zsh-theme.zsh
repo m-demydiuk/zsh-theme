@@ -53,7 +53,7 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     hook_com[misc]+="%F{red}${REF}"
 
     local STATUS
-    STATUS=$(git status --porcelain 2> /dev/null | tail -n 1)
+    STATUS=$(git status --porcelain --untracked-files="${VSTELMAKH_THEME_UNTRACKED:-normal}" 2> /dev/null | head -n 1)
     if [[ -n $STATUS ]]; then
         hook_com[misc]+=" %F{yellow}•" # repository has changes
     fi
