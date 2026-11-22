@@ -53,6 +53,13 @@ sed -i.bak -E 's/^([[:space:]]*ZSH_THEME=).*/\1"vstelmakh"/' "${HOME}/.zshrc" &&
 3. Restart your terminal or run `source ~/.zshrc` to apply the changes.
 </details>
 
+## Options
+Set these variables in `~/.zshrc` to change the behaviour.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VSTELMAKH_THEME_DURATION_MIN` | `5` | Show the duration of the previous command when it took at least this many seconds (`0` to disable) |
+
 ## Uninstallation
 Select and follow the uninstallation instructions for the shell framework used during installation.
 

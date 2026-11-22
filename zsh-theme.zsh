@@ -59,9 +59,42 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     fi
 }
 
+# Duration of the previous command, shown when it took at least this many seconds (0 to disable)
+: ${VSTELMAKH_THEME_DURATION_MIN:=5}
+zmodload zsh/datetime
+autoload -Uz add-zsh-hook
+
+_vstelmakh_theme_format_duration() {
+    local TOTAL=$1
+    local HOURS=$(( TOTAL / 3600 ))
+    local MINUTES=$(( TOTAL % 3600 / 60 ))
+    local REST=$(( TOTAL % 60 ))
+
+    if (( HOURS > 0 )); then
+        printf '%dh%dm' $HOURS $MINUTES
+    elif (( MINUTES > 0 )); then
+        printf '%dm%ds' $MINUTES $REST
+    else
+        printf '%ds' $REST
+    fi
+}
+
+_vstelmakh_theme_preexec() {
+    _vstelmakh_theme_command_start=$EPOCHSECONDS
+}
+add-zsh-hook preexec _vstelmakh_theme_preexec
+
 setopt prompt_subst
 precmd_functions+=( theme_precmd )
 theme_precmd () {
+    _vstelmakh_theme_duration=""
+    if [[ -n $_vstelmakh_theme_command_start ]]; then
+        local ELAPSED=$(( EPOCHSECONDS - _vstelmakh_theme_command_start ))
+        if (( VSTELMAKH_THEME_DURATION_MIN > 0 && ELAPSED >= VSTELMAKH_THEME_DURATION_MIN )); then
+            _vstelmakh_theme_duration="%F{yellow}$(_vstelmakh_theme_format_duration $ELAPSED) "
+        fi
+        unset _vstelmakh_theme_command_start
+    fi
     vcs_info
 }
 
@@ -69,4 +102,5 @@ PROMPT="%B" # text style bold
 PROMPT+="%(?:%F{green}:%F{red})➜ " # previous command status
 PROMPT+="%F{cyan}%~ " # workdir
 PROMPT+='${vcs_info_msg_0_}' # git reference (if git repo)
+PROMPT+='${_vstelmakh_theme_duration}' # previous command duration (if long)
 PROMPT+="%b%f%u" # reset all text styles
