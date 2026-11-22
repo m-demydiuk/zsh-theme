@@ -59,14 +59,33 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     fi
 }
 
+# Friday evening nudge (1 to enable) and the hour it starts
+: ${VSTELMAKH_THEME_FRIDAY:=0}
+: ${VSTELMAKH_THEME_FRIDAY_HOUR:=18}
+zmodload zsh/datetime
+
+_vstelmakh_theme_is_friday_evening() {
+    local NOW=$1
+    local WEEKDAY HOUR
+    strftime -s WEEKDAY '%u' $NOW
+    strftime -s HOUR '%H' $NOW
+    (( WEEKDAY == 5 && 10#$HOUR >= VSTELMAKH_THEME_FRIDAY_HOUR ))
+}
+
 setopt prompt_subst
 precmd_functions+=( theme_precmd )
 theme_precmd () {
+    _vstelmakh_theme_symbol="➜"
+    _vstelmakh_theme_path_color="cyan"
+    if (( VSTELMAKH_THEME_FRIDAY )) && _vstelmakh_theme_is_friday_evening $EPOCHSECONDS; then
+        _vstelmakh_theme_symbol="🍺"
+        _vstelmakh_theme_path_color="208"
+    fi
     vcs_info
 }
 
 PROMPT="%B" # text style bold
-PROMPT+="%(?:%F{green}:%F{red})➜ " # previous command status
-PROMPT+="%F{cyan}%~ " # workdir
+PROMPT+='%(?:%F{green}${_vstelmakh_theme_symbol}:%F{red}➜) ' # previous command status
+PROMPT+='%F{${_vstelmakh_theme_path_color}}%~ ' # workdir
 PROMPT+='${vcs_info_msg_0_}' # git reference (if git repo)
 PROMPT+="%b%f%u" # reset all text styles
