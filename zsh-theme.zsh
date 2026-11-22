@@ -59,13 +59,47 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     fi
 }
 
+# Prompt pet that reacts to the previous command (1 to enable)
+: ${VSTELMAKH_THEME_PET:=0}
+zmodload zsh/datetime
+autoload -Uz add-zsh-hook
+
+_vstelmakh_theme_pet_preexec() {
+    _vstelmakh_theme_pet_command=$1
+    _vstelmakh_theme_pet_start=$EPOCHSECONDS
+}
+add-zsh-hook preexec _vstelmakh_theme_pet_preexec
+
+_vstelmakh_theme_pet_mood() {
+    local LAST_STATUS=$1
+    if [[ -z $_vstelmakh_theme_pet_command ]]; then
+        REPLY="(o_o)" # nothing ran
+    elif (( LAST_STATUS != 0 )); then
+        REPLY="(>_<)" # command failed
+    elif [[ $_vstelmakh_theme_pet_command == git\ push* ]]; then
+        REPLY='\(^o^)/' # pushed
+    elif (( EPOCHSECONDS - _vstelmakh_theme_pet_start >= 60 )); then
+        REPLY="(-_-)zzz" # long wait
+    else
+        REPLY="(^_^)" # command succeeded
+    fi
+}
+
 setopt prompt_subst
 precmd_functions+=( theme_precmd )
 theme_precmd () {
+    local LAST_STATUS=$?
+    _vstelmakh_theme_pet=""
+    if (( VSTELMAKH_THEME_PET )); then
+        _vstelmakh_theme_pet_mood $LAST_STATUS
+        _vstelmakh_theme_pet="%F{white}${REPLY} "
+    fi
+    unset _vstelmakh_theme_pet_command _vstelmakh_theme_pet_start
     vcs_info
 }
 
 PROMPT="%B" # text style bold
+PROMPT+='${_vstelmakh_theme_pet}' # prompt pet (if enabled)
 PROMPT+="%(?:%F{green}:%F{red})➜ " # previous command status
 PROMPT+="%F{cyan}%~ " # workdir
 PROMPT+='${vcs_info_msg_0_}' # git reference (if git repo)

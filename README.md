@@ -53,6 +53,13 @@ sed -i.bak -E 's/^([[:space:]]*ZSH_THEME=).*/\1"vstelmakh"/' "${HOME}/.zshrc" &&
 3. Restart your terminal or run `source ~/.zshrc` to apply the changes.
 </details>
 
+## Options
+Set these variables in `~/.zshrc` to change the behaviour.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VSTELMAKH_THEME_PET` | `0` | Show a pet at the start of the prompt that reacts to the previous command (`1` to enable): `(^_^)` success, `(>_<)` failure, `\(^o^)/` after `git push`, `(-_-)zzz` after a command of a minute or more, `(o_o)` when nothing ran |
+
 ## Uninstallation
 Select and follow the uninstallation instructions for the shell framework used during installation.
 
