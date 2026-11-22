@@ -53,6 +53,13 @@ sed -i.bak -E 's/^([[:space:]]*ZSH_THEME=).*/\1"vstelmakh"/' "${HOME}/.zshrc" &&
 3. Restart your terminal or run `source ~/.zshrc` to apply the changes.
 </details>
 
+## Options
+Set these variables in `~/.zshrc` to change the behaviour.
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VSTELMAKH_THEME_SEASONAL` | `0` | Replace the arrow with a seasonal symbol on special days (`1` to enable): ❤️ 14 February, 🐣 Good Friday to Easter Monday, 🎃 25–31 October, 🎄 1–26 December, 🥂 31 December and 1 January |
+
 ## Uninstallation
 Select and follow the uninstallation instructions for the shell framework used during installation.
 

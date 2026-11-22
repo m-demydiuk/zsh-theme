@@ -59,14 +59,75 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     fi
 }
 
+# Seasonal prompt symbol on special days (1 to enable)
+: ${VSTELMAKH_THEME_SEASONAL:=0}
+zmodload zsh/datetime
+
+# Days between Easter Sunday and the date of the given epoch (Anonymous Gregorian algorithm)
+_vstelmakh_theme_easter_offset() {
+    local NOW=$1
+    local YEAR TODAY EASTER
+    strftime -s YEAR '%Y' $NOW
+
+    local A=$(( YEAR % 19 )) B=$(( YEAR / 100 )) C=$(( YEAR % 100 ))
+    local D=$(( B / 4 )) E=$(( B % 4 )) F=$(( (B + 8) / 25 ))
+    local G=$(( (B - F + 1) / 3 ))
+    local H=$(( (19 * A + B - D - G + 15) % 30 ))
+    local I=$(( C / 4 )) K=$(( C % 4 ))
+    local L=$(( (32 + 2 * E + 2 * I - H - K) % 7 ))
+    local M=$(( (A + 11 * H + 22 * L) / 451 ))
+    local MONTH=$(( (H + L - 7 * M + 114) / 31 ))
+    local DAY=$(( (H + L - 7 * M + 114) % 31 + 1 ))
+
+    strftime -r -s EASTER '%Y-%m-%d' "${YEAR}-${MONTH}-${DAY}"
+    strftime -s TODAY '%Y-%m-%d' $NOW
+    strftime -r -s TODAY '%Y-%m-%d' $TODAY
+
+    local DIFF=$(( TODAY - EASTER ))
+    if (( DIFF >= 0 )); then
+        REPLY=$(( (DIFF + 43200) / 86400 ))
+    else
+        REPLY=$(( -((-DIFF + 43200) / 86400) ))
+    fi
+}
+
+_vstelmakh_theme_seasonal_symbol() {
+    local NOW=$1
+    local MONTH_DAY
+    strftime -s MONTH_DAY '%m%d' $NOW
+    MONTH_DAY=$(( 10#$MONTH_DAY ))
+
+    if (( MONTH_DAY == 1231 || MONTH_DAY == 101 )); then
+        REPLY="🥂"
+    elif (( MONTH_DAY == 214 )); then
+        REPLY="❤️"
+    elif (( MONTH_DAY >= 1025 && MONTH_DAY <= 1031 )); then
+        REPLY="🎃"
+    elif (( MONTH_DAY >= 1201 && MONTH_DAY <= 1226 )); then
+        REPLY="🎄"
+    else
+        _vstelmakh_theme_easter_offset $NOW
+        if (( REPLY >= -2 && REPLY <= 1 )); then
+            REPLY="🐣"
+        else
+            REPLY="➜"
+        fi
+    fi
+}
+
 setopt prompt_subst
 precmd_functions+=( theme_precmd )
 theme_precmd () {
+    _vstelmakh_theme_symbol="➜"
+    if (( VSTELMAKH_THEME_SEASONAL )); then
+        _vstelmakh_theme_seasonal_symbol $EPOCHSECONDS
+        _vstelmakh_theme_symbol=$REPLY
+    fi
     vcs_info
 }
 
 PROMPT="%B" # text style bold
-PROMPT+="%(?:%F{green}:%F{red})➜ " # previous command status
+PROMPT+='%(?:%F{green}${_vstelmakh_theme_symbol}:%F{red}➜) ' # previous command status
 PROMPT+="%F{cyan}%~ " # workdir
 PROMPT+='${vcs_info_msg_0_}' # git reference (if git repo)
 PROMPT+="%b%f%u" # reset all text styles
