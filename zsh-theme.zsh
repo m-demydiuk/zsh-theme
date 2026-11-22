@@ -52,6 +52,21 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     REF=$(string_truncate 15 "…" "${REF}")
     hook_com[misc]+="%F{red}${REF}"
 
+    if (( ${VSTELMAKH_THEME_AHEAD_BEHIND:-1} )); then
+        local COUNTS
+        COUNTS=$(git rev-list --left-right --count '@{upstream}...HEAD' 2> /dev/null)
+        if [[ -n $COUNTS ]]; then
+            local BEHIND=${COUNTS%%[[:space:]]*}
+            local AHEAD=${COUNTS##*[[:space:]]}
+            local ARROWS=""
+            if (( AHEAD > 0 )); then ARROWS+="⇡${AHEAD}"; fi
+            if (( BEHIND > 0 )); then ARROWS+="⇣${BEHIND}"; fi
+            if [[ -n $ARROWS ]]; then
+                hook_com[misc]+=" %F{cyan}${ARROWS}" # commits ahead/behind upstream
+            fi
+        fi
+    fi
+
     local STATUS
     STATUS=$(git status --porcelain 2> /dev/null | tail -n 1)
     if [[ -n $STATUS ]]; then
