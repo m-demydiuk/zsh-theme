@@ -6,7 +6,7 @@ It provides a compact, clean prompt showing the last command's exit status and t
 When inside a Git repository, it displays the active Git reference (branch, tag or commit hash), automatically truncating long branch names.
 An indicator appears when there are uncommitted changes, keeping the prompt informative without clutter.
 
-<img alt="ZSH theme example" src="resources/example.gif" width="625">
+<img alt="ZSH theme demo in terminal session" src="resources/example.gif" width="625">
 
 ## Installation
 Select and follow the installation instructions for a shell framework of your choice.
@@ -26,7 +26,7 @@ curl -fL# --create-dirs \
 2. Source the theme in `~/.zshrc` file.
 The next shell command will source the theme in the `~/.zshrc` file:
 ```shell
-echo -e "\nsource ${HOME}/.zshrc.vstelmakh.plugin.zsh\n" >> "${ZSH_CONFIG}"
+echo -e "\nsource ${HOME}/.zshrc.vstelmakh.plugin.zsh\n" >> "${HOME}/.zshrc"
 ```
 
 3. Restart your terminal or run `source ~/.zshrc` to apply the changes.
@@ -40,17 +40,58 @@ echo -e "\nsource ${HOME}/.zshrc.vstelmakh.plugin.zsh\n" >> "${ZSH_CONFIG}"
 The next shell command will download the theme to the OMZ custom themes location with the name `vstelmakh.zsh-theme`: 
 ```shell
 curl -fL# --create-dirs \
-    -o "$([ -z "${ZSH_CUSTOM}" ] && echo "${ZSH}/custom" || echo "${ZSH_CUSTOM}")/themes/vstelmakh.zsh-theme" \
+    -o "${ZSH_CUSTOM:-${ZSH}/custom}/themes/vstelmakh.zsh-theme" \
     "https://raw.githubusercontent.com/vstelmakh/zsh-theme/main/zsh-theme.zsh"
 ```
 
 2. Configure theme `ZSH_THEME=vstelmakh` in `~/.zshrc` file.
 The next shell command will update the theme in the `~/.zshrc` file:
 ```shell
-sed -i -E "s/^\(\s*ZSH_THEME=\)\(.*\)/\1\"vstelmakh\"/g" "${HOME}/.zshrc"
+sed -i.bak -E 's/^([[:space:]]*ZSH_THEME=).*/\1"vstelmakh"/' "${HOME}/.zshrc" && rm "${HOME}/.zshrc.bak"
 ```
 
 3. Restart your terminal or run `source ~/.zshrc` to apply the changes.
+</details>
+
+## Uninstallation
+Select and follow the uninstallation instructions for the shell framework used during installation.
+
+<details>
+    <summary>Plain (without a framework)</summary>
+
+### Without Framework
+1. Remove the theme source line from `~/.zshrc` file.
+The next shell command will remove the line from the `~/.zshrc` file:
+```shell
+sed -i.bak -E '/^source .*\/\.zshrc\.vstelmakh\.plugin\.zsh$/d' "${HOME}/.zshrc" && rm "${HOME}/.zshrc.bak"
+```
+
+2. Delete the theme file.
+The next shell command will delete the `~/.zshrc.vstelmakh.plugin.zsh` file:
+```shell
+rm "${HOME}/.zshrc.vstelmakh.plugin.zsh"
+```
+
+3. Restart your terminal to apply the changes.
+</details>
+
+<details>
+    <summary>Oh My ZSH</summary>
+
+### Oh My ZSH
+1. Configure your previous theme in `~/.zshrc` file.
+The next shell command will set the theme to the Oh My ZSH default `robbyrussell`. Replace it with your previous theme if needed:
+```shell
+sed -i.bak -E 's/^([[:space:]]*ZSH_THEME=).*/\1"robbyrussell"/' "${HOME}/.zshrc" && rm "${HOME}/.zshrc.bak"
+```
+
+2. Delete the theme file from Oh My ZSH custom theme directory.
+The next shell command will delete the `vstelmakh.zsh-theme` file:
+```shell
+rm "${ZSH_CUSTOM:-${ZSH}/custom}/themes/vstelmakh.zsh-theme"
+```
+
+3. Restart your terminal to apply the changes.
 </details>
 
 ## Contributing
