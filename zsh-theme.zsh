@@ -17,29 +17,29 @@
 # %~ - current path
 # %(::) - prompt conditional - %(condition:true:false)
 
+_vstelmakh_theme_truncate() {
+    local LENGTH=$1
+    local ELLIPSIS=$2
+    local STRING=$3
+
+    if (( LENGTH < 0 )); then return 1; fi
+    if (( ${#STRING} > LENGTH )); then
+        if (( LENGTH <= ${#ELLIPSIS} )); then
+            printf '%s' "${STRING[1,$LENGTH]}"
+        else
+            printf '%s' "${STRING[1,$((LENGTH-${#ELLIPSIS}))]}${ELLIPSIS}"
+        fi
+    else
+        printf '%s' "$STRING"
+    fi
+}
+
 # Hook to set Git reference to misc (%m) content
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:*' formats "%%F{blue}[%m%%F{blue}]%%f "
 zstyle ':vcs_info:git*+set-message:*' hooks git-check
 +vi-git-check() {
-    local string_truncate() {
-        local LENGTH=$1
-        local ELLIPSIS=$2
-        local STRING=$3
-
-        if (( LENGTH < 0 )); then return 1; fi
-        if (( ${#STRING} > LENGTH )); then
-            if (( LENGTH <= ${#ELLIPSIS} )); then
-                printf '%s' "${STRING[1,$LENGTH]}"
-            else
-                printf '%s' "${STRING[1,$((LENGTH-${#ELLIPSIS}))]}${ELLIPSIS}"
-            fi
-        else
-            printf '%s' "$STRING"
-        fi
-    }
-
     # - branch name
     # - or tag name
     # - or short SHA of the commit
@@ -49,7 +49,7 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     || REF=$(git rev-parse --short HEAD 2> /dev/null) \
     || return 0
 
-    REF=$(string_truncate 15 "…" "${REF}")
+    REF=$(_vstelmakh_theme_truncate 15 "…" "${REF}")
     hook_com[misc]+="%F{red}${REF}"
 
     local STATUS
