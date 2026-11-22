@@ -53,6 +53,32 @@ sed -i.bak -E 's/^([[:space:]]*ZSH_THEME=).*/\1"vstelmakh"/' "${HOME}/.zshrc" &&
 3. Restart your terminal or run `source ~/.zshrc` to apply the changes.
 </details>
 
+## Configuration
+The theme works without any configuration.
+To change its look, set any of these variables in `~/.zshrc` before the theme is loaded
+(for Oh My ZSH: before `source $ZSH/oh-my-zsh.sh`).
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VSTELMAKH_THEME_PROMPT_SYMBOL` | `➜` | Symbol in front of the path |
+| `VSTELMAKH_THEME_DIRTY_SYMBOL` | `•` | Indicator for uncommitted changes |
+| `VSTELMAKH_THEME_REF_MAX_LENGTH` | `15` | Maximum length of the Git reference before it is truncated |
+| `VSTELMAKH_THEME_COLOR_SUCCESS` | `green` | Prompt symbol colour after a successful command |
+| `VSTELMAKH_THEME_COLOR_ERROR` | `red` | Prompt symbol colour after a failed command |
+| `VSTELMAKH_THEME_COLOR_PATH` | `cyan` | Current path colour |
+| `VSTELMAKH_THEME_COLOR_GIT` | `blue` | Git brackets colour |
+| `VSTELMAKH_THEME_COLOR_REF` | `red` | Git reference colour |
+| `VSTELMAKH_THEME_COLOR_DIRTY` | `yellow` | Changes indicator colour |
+
+Colours accept any value of the zsh `%F{…}` prompt escape: a name such as `magenta` or a 256-colour number such as `208`.
+
+Example:
+```shell
+VSTELMAKH_THEME_PROMPT_SYMBOL='$'
+VSTELMAKH_THEME_REF_MAX_LENGTH=25
+VSTELMAKH_THEME_COLOR_REF=208
+```
+
 ## Uninstallation
 Select and follow the uninstallation instructions for the shell framework used during installation.
 

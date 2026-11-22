@@ -17,10 +17,21 @@
 # %~ - current path
 # %(::) - prompt conditional - %(condition:true:false)
 
+# Configuration (set before the theme is loaded to override)
+: ${VSTELMAKH_THEME_PROMPT_SYMBOL:=➜}
+: ${VSTELMAKH_THEME_DIRTY_SYMBOL:=•}
+: ${VSTELMAKH_THEME_REF_MAX_LENGTH:=15}
+: ${VSTELMAKH_THEME_COLOR_SUCCESS:=green}
+: ${VSTELMAKH_THEME_COLOR_ERROR:=red}
+: ${VSTELMAKH_THEME_COLOR_PATH:=cyan}
+: ${VSTELMAKH_THEME_COLOR_GIT:=blue}
+: ${VSTELMAKH_THEME_COLOR_REF:=red}
+: ${VSTELMAKH_THEME_COLOR_DIRTY:=yellow}
+
 # Hook to set Git reference to misc (%m) content
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:*' formats "%%F{blue}[%m%%F{blue}]%%f "
+zstyle ':vcs_info:*' formats "%%F{${VSTELMAKH_THEME_COLOR_GIT}}[%m%%F{${VSTELMAKH_THEME_COLOR_GIT}}]%%f "
 zstyle ':vcs_info:git*+set-message:*' hooks git-check
 +vi-git-check() {
     local string_truncate() {
@@ -49,13 +60,13 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     || REF=$(git rev-parse --short HEAD 2> /dev/null) \
     || return 0
 
-    REF=$(string_truncate 15 "…" "${REF}")
-    hook_com[misc]+="%F{red}${REF}"
+    REF=$(string_truncate "${VSTELMAKH_THEME_REF_MAX_LENGTH}" "…" "${REF}")
+    hook_com[misc]+="%F{${VSTELMAKH_THEME_COLOR_REF}}${REF}"
 
     local STATUS
     STATUS=$(git status --porcelain 2> /dev/null | tail -n 1)
     if [[ -n $STATUS ]]; then
-        hook_com[misc]+=" %F{yellow}•" # repository has changes
+        hook_com[misc]+=" %F{${VSTELMAKH_THEME_COLOR_DIRTY}}${VSTELMAKH_THEME_DIRTY_SYMBOL}" # repository has changes
     fi
 }
 
@@ -66,7 +77,7 @@ theme_precmd () {
 }
 
 PROMPT="%B" # text style bold
-PROMPT+="%(?:%F{green}:%F{red})➜ " # previous command status
-PROMPT+="%F{cyan}%~ " # workdir
+PROMPT+="%(?:%F{${VSTELMAKH_THEME_COLOR_SUCCESS}}:%F{${VSTELMAKH_THEME_COLOR_ERROR}})${VSTELMAKH_THEME_PROMPT_SYMBOL} " # previous command status
+PROMPT+="%F{${VSTELMAKH_THEME_COLOR_PATH}}%~ " # workdir
 PROMPT+='${vcs_info_msg_0_}' # git reference (if git repo)
 PROMPT+="%b%f%u" # reset all text styles
