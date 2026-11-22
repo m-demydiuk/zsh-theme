@@ -21,6 +21,9 @@
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:*' formats "%%F{blue}[%m%%F{blue}]%%f "
+zstyle ':vcs_info:*' actionformats "%%F{blue}[%m%%F{blue}|%%F{magenta}%a%%F{blue}]%%f "
+zstyle ':vcs_info:git*:*' patch-format ""
+zstyle ':vcs_info:git*:*' nopatch-format ""
 zstyle ':vcs_info:git*+set-message:*' hooks git-check
 +vi-git-check() {
     local string_truncate() {
