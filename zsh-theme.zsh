@@ -55,9 +55,19 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-check
     local STATUS
     STATUS=$(git status --porcelain 2> /dev/null | tail -n 1)
     if [[ -n $STATUS ]]; then
-        hook_com[misc]+=" %F{yellow}•" # repository has changes
+        local DIRTY_SYMBOL="•"
+        if (( ${VSTELMAKH_THEME_DIRTY_FIRE_AFTER:-0} > 0 )); then
+            local LAST_COMMIT
+            LAST_COMMIT=$(git log -1 --format=%ct 2> /dev/null)
+            if [[ -n $LAST_COMMIT ]] && (( EPOCHSECONDS - LAST_COMMIT > VSTELMAKH_THEME_DIRTY_FIRE_AFTER )); then
+                DIRTY_SYMBOL="🔥" # changes are older than the threshold
+            fi
+        fi
+        hook_com[misc]+=" %F{yellow}${DIRTY_SYMBOL}" # repository has changes
     fi
 }
+
+zmodload zsh/datetime
 
 setopt prompt_subst
 precmd_functions+=( theme_precmd )
